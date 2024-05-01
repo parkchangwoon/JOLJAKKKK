@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 리스트 페이지</title>
+</head>
+
+<style>
+    .layout {
+        width : 500px;
+        margin : 0 auto;
+        margin-top : 40px;
+        position: relative;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .title-column {
+        width: 50%;
+    }
+
+    .rating-column {
+        width: 25%;
+    }
+
+    .write-button {
+        position: absolute;
+        bottom: -5px;
+        right: 20px;
+    }
+
+    .write-button a {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .write-button a:hover {
+        background-color: #0056b3;
+    }
+
+    .post-details {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 1;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="layout" th:if="${not #lists.isEmpty(list)}">
+    <table>
+        <thead>
+        <tr>
+            <th>글번호</th>
+            <th class="title-column">제목</th>
+            <th class="rating-column">별점</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${list}">
+            <td th:text="${board.dynamicId}">1</td>
+            <td>
+                <a th:text="${#strings.length(board.title) > 10 ? #strings.substring(board.title, 0, 10) + '...' : board.title}" th:href="@{/board/view(id=${board.id})}"></a>
+            </td>
+            <td th:text="${board.rating}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <a th:if="${startPage > 1}" th:href="@{/board/list(page=${startPage - 2}, searchKeyword=${param.searchKeyword})}">이전</a>
+
+        <span th:each="pageNum : ${#numbers.sequence(startPage, (startPage + 9 > totalPages ? totalPages : startPage + 9))}">
+            <a th:if="${pageNum == nowPage}" th:text="${pageNum}" style="font-weight: bold;"></a>
+            <a th:unless="${pageNum == nowPage}" th:href="@{/board/list(page=${pageNum - 1}, searchKeyword=${param.searchKeyword})}" th:text="${pageNum}"></a>
+        </span>
+
+        <a th:if="${endPage < totalPages}" th:href="@{/board/list(page=${startPage + 9}, searchKeyword=${param.searchKeyword})}">다음</a>
+    </div>
+
+    <form th:action="@{/board/list}" method="get">
+        <input type="text" name="searchKeyword" placeholder="제목 검색">
+        <input type="hidden" name="store" th:value="${selectedStore}" />
+        <button type="submit">검색</button>
+        <input type="hidden" name="searchType" value="title">
+        <input type="hidden" name="rating" th:value="${param.rating}" />
+    </form>
+    <div class="write-button">
+        <a href="/board/write" class="button">리뷰 작성</a>
+    </div>
+</div>
+</body>
+</html>

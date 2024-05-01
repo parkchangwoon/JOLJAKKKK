@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>직종 카테고리</title>
+    <script>
+        function showStores(category) {
+            // 해당 카테고리에 속하는 점포 목록을 가져와서 stores.html 템플릿에 전달
+            fetch("/categories/" + category + "/stores")
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("storesContainer").innerHTML = html;
+                });
+        }
+    </script>
+</head>
+<body>
+<h1>직종 카테고리</h1>
+<ul>
+    <!-- 각 직종 카테고리를 반복문으로 출력 -->
+    <li th:each="category : ${categories}">
+        <!-- 마우스를 가져다대었을 때 showStores 함수를 호출하여 점포 목록을 보여줌 -->
+        <a th:text="${category}" th:attr="onmouseover='showStores(\'' + ${category} + '\')'"></a>
+    </li>
+</ul>
+<!-- 점포 목록이 표시될 곳 -->
+<div id="storesContainer"></div>
+</body>
+</html>

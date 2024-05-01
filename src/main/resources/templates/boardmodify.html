@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시물 수정폼</title>
+</head>
+
+<style>
+
+    .layout {
+        width : 500px;
+        margin : 0 auto;
+        margin-top : 40px;
+    }
+
+    .layout input {
+        width : 100%;
+        box-sizing : border-box
+    }
+
+    .layout textarea {
+        width : 100%;
+        margin-top : 10px;
+        min-height : 300px;
+    }
+
+</style>
+
+<body>
+<div class="layout">
+    <form th:action="@{'/board/update/' + ${board.id}}" method="post" onsubmit="return validateForm()">
+        <!-- 기존 입력 폼 필드 -->
+        <input type="hidden" name="id" th:value="${board.id}" />
+        <input name="title" type="text" th:value="${board.title}" placeholder="제목을 입력하세요" maxlength="20" oninput="updateTitleCounter(this)">
+        <textarea name="content" placeholder="내용을 입력하세요" th:text="${board.content}" maxlength="40" oninput="updateContentCounter(this)"></textarea>
+        <div id="titleCounter">0 / 20</div>
+        <div id="contentCounter">0 / 40</div>
+
+        <!-- 수정할 별점 입력 필드 -->
+        <label for="rating">별점:</label>
+        <select name="rating" id="rating" th:value="${board.rating}">
+            <option th:each="i : ${#numbers.sequence(1, 5)}"
+                    th:value="${i}"
+                    th:text="${i + '점'}"
+                    th:selected="${i == board.rating}"></option>
+        </select>
+        <input type="hidden" name="oldRating" th:value="${board.rating}" />
+
+        <button type="submit">수정</button>
+    </form>
+</div>
+
+<script>
+    function validateForm() {
+        var title = document.getElementsByName("title")[0].value;
+        var content = document.getElementsByName("content")[0].value;
+
+        if (title.length > 20) {
+            alert("제목은 최대 20자까지 입력 가능합니다.");
+            return false;
+        }
+
+        if (content.length > 40) {
+            alert("내용은 최대 40자까지 입력 가능합니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function updateTitleCounter(input) {
+        var titleLength = input.value.length;
+        var counter = document.getElementById("titleCounter");
+        counter.textContent = titleLength + " / 20";
+    }
+
+    function updateContentCounter(input) {
+        var contentLength = input.value.length;
+        var counter = document.getElementById("contentCounter");
+        counter.textContent = contentLength + " / 40";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updateTitleCounter(document.getElementsByName("title")[0]);
+        updateContentCounter(document.getElementsByName("content")[0]);
+    });
+</script>
+
+</body>
+</html>
